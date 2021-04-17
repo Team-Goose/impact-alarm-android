@@ -82,9 +82,10 @@ class MainGetRequest extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params){
         URL url = null;
         try {
-            url = new URL("https://reqres.in/api/users?page=2");
+            url = new URL("raspberrypi.local:5000");
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return null;
         }
 
         HttpURLConnection connection = null;
@@ -92,22 +93,20 @@ class MainGetRequest extends AsyncTask<Void, Void, Void> {
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         try {
             connection.setRequestMethod("GET");
         } catch (ProtocolException e) {
             e.printStackTrace();
+            return null;
         }
 
-        try {
-            connection.setRequestProperty("Cache-Control", "no-cache");
-            connection.setRequestProperty("Accept", "*/*");
-            connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-            connection.setRequestProperty("Connection", "keep-alive");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        connection.setRequestProperty("Cache-Control", "no-cache");
+        connection.setRequestProperty("Accept", "*/*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Connection", "keep-alive");
 
         int responseCode = -1;
         try {
