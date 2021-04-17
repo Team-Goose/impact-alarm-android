@@ -59,7 +59,7 @@ public class FirstFragment extends Fragment {
                     NavHostFragment.findNavController(FirstFragment.this)
                             .navigate(R.id.action_FirstFragment_to_SecondFragment);
                     MainActivity.checkingForAlarms = true;
-                    handler.postAtTime(run, alarm.getTriggerTime() - (System.currentTimeMillis() - SystemClock.uptimeMillis()) + 30000);
+                    handler.postAtTime(run, alarm.getTriggerTime() - (System.currentTimeMillis() - SystemClock.uptimeMillis()) + 10000);
                 } else{
                     Snackbar.make(view, "No upcoming alarms to monitor!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
@@ -82,7 +82,7 @@ class MainGetRequest extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params){
         URL url = null;
         try {
-            url = new URL("raspberrypi.local:5000");
+            url = new URL("http://192.168.93.146:5000/servo");
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
