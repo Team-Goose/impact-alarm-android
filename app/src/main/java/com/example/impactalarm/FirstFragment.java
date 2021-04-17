@@ -2,11 +2,11 @@ package com.example.impactalarm;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.service.notification.StatusBarNotification;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +22,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class FirstFragment extends Fragment {
 
     public AlarmManager manager;
     public AlarmManager.AlarmClockInfo alarm;
-    public NotificationListenerService notifs;
 
     @Override
     public View onCreateView(
@@ -53,7 +51,7 @@ public class FirstFragment extends Fragment {
                     @Override
                     public void run(){
                         if(MainActivity.checkingForAlarms) {
-                            System.out.println("it's working");
+                            new MainGetRequest().execute();
                         }
                     }
                 };
@@ -71,35 +69,57 @@ public class FirstFragment extends Fragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                URL url = null;
-                try {
-                    url = new URL("https://reqres.in/api/users?page=2");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-
-                HttpURLConnection connection = null;
-                try {
-                    connection = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    connection.setRequestMethod("GET");
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                }
-
-                InputStream responseStream = null;
-                try {
-                    responseStream = connection.getInputStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                System.out.println(responseStream);
+                new MainGetRequest().execute();
             }
         });
+    }
+}
+
+class MainGetRequest extends AsyncTask<Void, Void, Void> {
+    protected void onPreExecute(){
+    }
+
+    protected Void doInBackground(Void... params){
+        URL url = null;
+        try {
+            url = new URL("https://reqres.in/api/users?page=2");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            connection.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            connection.setRequestProperty("Cache-Control", "no-cache");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+            connection.setRequestProperty("Connection", "keep-alive");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int responseCode = -1;
+        try {
+            responseCode = connection.getResponseCode();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Response Code: " + responseCode);
+        return null;
+    }
+
+    protected void onPostExecute(Void result){
     }
 }
